@@ -1,0 +1,32 @@
+package idris-experiments
+-- version =
+authors = "Balazs Komuves"
+-- maintainers =
+-- license =
+-- brief =
+-- readme =
+homepage = "https://github.com/bkomuves/idris-experiments"
+-- sourceloc =
+-- bugtracker =
+
+-- packages to add to search path
+-- depends =
+
+-- modules to install
+modules 
+  = Small.Printf
+  , Small.List_vs_Vect
+  , Parsing.JSON
+  , SQL.Sig
+  , SQL.Expr
+  , SQL.Query
+  , Lib.Parsec
+  , Lib.Misc
+
+-- main file (i.e. file to load at REPL)
+-- main =
+
+sourcedir = "."
+
+-- builddir =
+-- outputdir =
