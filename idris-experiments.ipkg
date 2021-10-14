@@ -16,6 +16,7 @@ homepage = "https://github.com/bkomuves/idris-experiments"
 modules 
   = Small.Printf
   , Small.List_vs_Vect
+  , Generic.ADT
   , Parsing.JSON
   , SQL.Sig
   , SQL.Expr

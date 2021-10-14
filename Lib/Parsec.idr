@@ -113,6 +113,30 @@ Alternative (Parser tok) where
 
 --------------------------------------------------------------------------------
 
+{-
+-- why do i have to repeat this, as Lexer is just a public type synonym???
+
+public export
+Functor Lexer where
+  map = pMap
+
+public export
+Applicative Lexer where
+  pure  = pPure 
+  (<*>) = pApStrict
+
+public export
+Monad Lexer where
+  (>>=) = pBind
+
+public export
+Alternative Lexer where
+  empty = pFail
+  (<|>) = pAlter 
+-}
+
+--------------------------------------------------------------------------------
+
 export
 runParser : Parser tok a -> List tok -> Either Msg a
 runParser (MkParser p) ts = case p ts of
@@ -125,6 +149,14 @@ runParser (MkParser p) ts = case p ts of
 export
 runLexer : Lexer a -> String -> Either Msg a
 runLexer lexer input = runParser lexer (unpack input)
+
+export 
+printLexed : Show a => Lexer a -> String -> IO ()
+printLexed p input = case runLexer p input of 
+  Left  err => putStrLn err
+  Right y   => printLn  y
+
+--------------------------------------------------------------------------------
 
 export
 accept : (tok -> Maybe a) -> Parser tok a
@@ -292,7 +324,7 @@ digits = map pack $ some digit
 
 export
 identifier : Lexer String
-identifier = map pack $ some alphaNumUnderscore
+identifier = map pack $ (::) <$> (letter <|> underscore) <*> many alphaNumUnderscore
 
 --------------------------------------------------------------------------------
 
@@ -310,6 +342,23 @@ integer = do
   case parseInteger (singleton sgn ++ ds) of
     Just n  => pPure n
     Nothing => pErr "integer: shouldn't happen"
+
+export
+natP : Lexer Nat
+natP = map cast natural
+
+export
+intP : Lexer Int
+intP = map cast integer
+
+export
+boolP : Lexer Bool
+boolP = do
+  b <- identifier
+  case b of
+    "True"  => pure True
+    "False" => pure False
+    _       => pFail
 
 escapedChar : Char -> Lexer Char
 escapedChar z = do

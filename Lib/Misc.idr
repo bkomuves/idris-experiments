@@ -3,15 +3,29 @@
 
 module Lib.Misc
 
+import Data.Fin
 import Data.List
+import Data.Vect
+
+%hide Data.Fin.Equality.FZ
+%hide Data.Fin.Equality.FS
 
 --------------------------------------------------------------------------------
+-- List
 
 public export
 sortOn : Ord b => (a -> b) -> List a -> List a
 sortOn f = sortBy (\x,y => compare (f x) (f y))
 
 --------------------------------------------------------------------------------
+-- Fin
+public export
+enumerateFin : (n : Nat) -> List (Fin n)
+enumerateFin Z     = Nil
+enumerateFin (S m) = FZ :: map FS (enumerateFin m)
+
+--------------------------------------------------------------------------------
+-- String
 
 public export
 intercalate : String -> List String -> String
@@ -22,6 +36,7 @@ intercalate sep = fastConcat . go where
   go (x::xs) = x :: sep :: go xs
 
 --------------------------------------------------------------------------------
+-- Eq
 
 -- the default Eq instance of a type
 public export
@@ -34,6 +49,7 @@ mkEq : (a -> a -> Bool) -> Eq a
 mkEq f = MkEq f (\x,y => not (f x y))
 
 --------------------------------------------------------------------------------
+-- Ord
 
 -- the default Ord instance of a type
 public export
@@ -61,5 +77,44 @@ mkOrd eq cmp = MkOrd @{mkEq eq} cmp lt gt le ge max min where
   ge  x y = cmp x y /= LT
   max x y = if ge x y then x else y
   min x y = if le x y then x else y
+
+--------------------------------------------------------------------------------
+-- dependent vectors
+
+-- dependent vector
+public export
+depVec : (n : Nat) -> (b -> Type) -> Vect n b -> Type
+depVec n family xs = (i : Fin n) -> family (index i xs)
+
+-- dependent monadic vector
+public export
+depVecM : (monad : Type -> Type) -> Monad monad => (n : Nat) -> (b -> Type) -> Vect n b -> Type
+depVecM monad n family xs = (i : Fin n) -> monad (family (index i xs))
+
+-- cons of a dependent vector
+depCons : {n : Nat} -> {b : Type}
+       -> {x : b} -> {xs : Vect n b}
+       -> (family : b -> Type) 
+       -> family x
+       -> depVec n     family xs 
+       -> depVec (S n) family (x::xs) 
+depCons family y ys = \i => case i of
+  FZ     => y
+  (FS j) => ys j
+
+-- sequencing of a dependent monadic vector
+export
+depSequence : (monad : Type -> Type) -> Monad monad => {n : Nat} -> (b : Type) -> (family : b -> Type) 
+            -> (xs : Vect n b) -> depVecM monad n family xs -> monad (depVec n family xs) 
+depSequence monad {n} b family xs mvec = worker n xs mvec where
+
+  worker : (n : Nat) -> (xs : Vect n b) -> depVecM monad n family xs -> monad (depVec n family xs)
+  worker n tvec mvec = case n of
+    Z    => pure $ \i => absurd i
+    S n1 => case tvec of
+      (t::ts) => do
+        y  <- mvec FZ
+        ys <- worker n1 ts (\k => mvec (FS k))
+        pure $ depCons family y ys
 
 --------------------------------------------------------------------------------
