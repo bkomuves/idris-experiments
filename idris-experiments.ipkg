@@ -18,6 +18,7 @@ modules
   , Small.List_vs_Vect
   , Generic.ADT
   , Parsing.JSON
+  , Lambda.STLC
   , SQL.Sig
   , SQL.Expr
   , SQL.Query
