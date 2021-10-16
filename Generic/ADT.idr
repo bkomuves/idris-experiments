@@ -68,7 +68,7 @@ mutual
     show ty = case ty of
       Base base => show base
       TupT tys  => "( " ++ intercalate " , " (map show $ toList tys ) ++ " )"
-      RecT flds => "{ " ++ intercalate " , " (map show $ toList flds) ++ " )"
+      RecT flds => "{ " ++ intercalate " , " (map show $ toList flds) ++ " }"
       SumT cons => "[ " ++ intercalate " | " (map show $ toList cons) ++ " ]"
 
 --------------------------------------------------------------------------------
@@ -154,9 +154,6 @@ typeOf (MkData ty _) = ty
 sigLemma2 : (fvec : Vect n Field) -> (i : Fin n) 
         -> reflectTy (index i (sigTypes fvec)) = reflectTy ((index i fvec) .type)
 sigLemma2 fvec i = cong reflectTy (sigLemma fvec i)
-
-transport : (0 prf : a = b) -> a -> b
-transport Refl x = x
 
 --------------------------------------------------------------------------------    
 -- generic pretty-printing 

@@ -11,6 +11,13 @@ import Data.Vect
 %hide Data.Fin.Equality.FS
 
 --------------------------------------------------------------------------------
+-- transport
+
+public export
+transport : (0 refl : a = b) -> a -> b
+transport Refl x = x
+
+--------------------------------------------------------------------------------
 -- List
 
 public export
@@ -34,6 +41,11 @@ intercalate sep = fastConcat . go where
   go []      = []
   go (x::[]) = [x]
   go (x::xs) = x :: sep :: go xs
+
+public export
+intercalateLeft : String -> List String -> String
+intercalateLeft sep [] = ""
+intercalateLeft sep xs = sep ++ intercalate sep xs
 
 --------------------------------------------------------------------------------
 -- Eq
@@ -77,6 +89,13 @@ mkOrd eq cmp = MkOrd @{mkEq eq} cmp lt gt le ge max min where
   ge  x y = cmp x y /= LT
   max x y = if ge x y then x else y
   min x y = if le x y then x else y
+
+--------------------------------------------------------------------------------
+-- Monad
+
+public export
+mapM : Traversable t => Applicative f => (a -> f b) -> t a -> f (t b)
+mapM = traverse
 
 --------------------------------------------------------------------------------
 -- dependent vectors

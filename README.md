@@ -5,13 +5,21 @@ Experiments with dependently-typed programming in Idris2
 This repo contains various small-to-medium sized experiments
 in dependently typed programming. For example:
 
-* type-safe `printf`
-* well-typed interpreter for simply typed lambda calculus
-* JSON parsing into a schema-indexed JSON type (inference and validation)
-* type-safe implementation of a query language similar to SQL
-* generic parsing / pretty-printing of algebraic datatypes
+* `Small.Printf`: type-safe `printf`
+* `Lambda.STLC`: well-typed interpreter for simply typed lambda calculus
+* `Parsing.JSON`: JSON parsing into a schema-indexed JSON type (inference and validation)
+* `SQL.*`type-safe implementation of a query language similar to SQL
+* `Generic.ADT`: generic parsing / pretty-printing of (non-recursive) algebraic datatypes
 
-TODO:
+Other possible exercises:
 
 * insertion sort with proof of correctness
+* tensor algebra
+* generic programming:
+    * generic data structures (for example generic tries)
+    * modelling recursive, maybe indexed algebraic datatypes 
+    * generic programming for trees
+* modelling some subset of the commutative algebra hierarchy?
+* type-safe (dependent) protocol descriptions
+* modelling optics
 * ...
