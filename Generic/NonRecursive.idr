@@ -1,7 +1,8 @@
 
--- modelling (non-recursive) ADTs and pretty-printing + parsing them
+-- modelling non-recursive ADTs (sums, products and records) 
+-- and a generic parser + pretty-printer for them
 
-module Generic.ADT 
+module Generic.NonRecursive
 
 import Data.String
 import Data.Vect

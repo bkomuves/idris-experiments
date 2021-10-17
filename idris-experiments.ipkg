@@ -15,8 +15,9 @@ homepage = "https://github.com/bkomuves/idris-experiments"
 -- modules to install
 modules 
   = Small.Printf
+  , Small.Fix
   , Small.List_vs_Vect
-  , Generic.ADT
+  , Generic.NonRecursive
   , Parsing.JSON
   , Lambda.STLC
   , SQL.Sig

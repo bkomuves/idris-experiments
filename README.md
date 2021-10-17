@@ -6,10 +6,11 @@ This repo contains various small-to-medium sized experiments
 in dependently typed programming. For example:
 
 * `Small.Printf`: type-safe `printf`
+* `Small.Fix`: n-ary (or multi-kinded) fixpoint type
 * `Lambda.STLC`: well-typed interpreter for simply typed lambda calculus
 * `Parsing.JSON`: JSON parsing into a schema-indexed JSON type (inference and validation)
-* `SQL.*`type-safe implementation of a query language similar to SQL
-* `Generic.ADT`: generic parsing / pretty-printing of (non-recursive) algebraic datatypes
+* `SQL.*`: type-safe implementation of a query language similar to SQL
+* `Generic.NonRecursive`: generic parsing / pretty-printing of (non-recursive) algebraic datatypes
 
 Other possible exercises:
 
