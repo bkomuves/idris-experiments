@@ -17,6 +17,10 @@ public export
 transport : (0 refl : a = b) -> a -> b
 transport Refl x = x
 
+-- we want to refer to this, but for some reason, we cannot refer to it as (->)...
+IdrisFunType : Type -> Type -> Type
+IdrisFunType a b = a -> b
+
 --------------------------------------------------------------------------------
 -- List
 
@@ -89,6 +93,17 @@ mkOrd eq cmp = MkOrd @{mkEq eq} cmp lt gt le ge max min where
   ge  x y = cmp x y /= LT
   max x y = if ge x y then x else y
   min x y = if le x y then x else y
+
+--------------------------------------------------------------------------------
+-- Show
+
+theShow : (a : Type) -> Show a => Show a
+theShow _ @{show} = show
+
+-- creates a Show implementation from `showPrec`
+public export
+mkShow : (Prec -> a -> String) -> Show a
+mkShow f = MkShow (f Open) f
 
 --------------------------------------------------------------------------------
 -- Monad

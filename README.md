@@ -9,8 +9,9 @@ in dependently typed programming. For example:
 * `Small.Fix`: n-ary (or multi-kinded) fixpoint type
 * `Lambda.STLC`: well-typed interpreter for simply typed lambda calculus
 * `Parsing.JSON`: JSON parsing into a schema-indexed JSON type (inference and validation)
-* `SQL.*`: type-safe implementation of a query language similar to SQL
+* `SQL.*`: type-safe implementation of a query language similar to SQL (work in progress)
 * `Generic.NonRecursive`: generic parsing / pretty-printing of (non-recursive) algebraic datatypes
+* `Generic.InitialAlg`: initial algebras of polynomial functors + generic `Eq` / `Show`
 
 Other possible exercises:
 

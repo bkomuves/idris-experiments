@@ -18,6 +18,7 @@ modules
   , Small.Fix
   , Small.List_vs_Vect
   , Generic.NonRecursive
+  , Generic.InitialAlg
   , Parsing.JSON
   , Lambda.STLC
   , SQL.Sig
