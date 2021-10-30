@@ -7,6 +7,7 @@ in dependently typed programming. For example:
 
 * `Small.Printf`: type-safe `printf`
 * `Small.Fix`: n-ary (or multi-kinded) fixpoint type
+* `Data.RAL`: skew-binary random access lists (using dependent types internally)
 * `Lambda.STLC`: well-typed interpreter for simply typed lambda calculus
 * `Parsing.JSON`: JSON parsing into a schema-indexed JSON type (inference and validation)
 * `SQL.*`: type-safe implementation of a query language similar to SQL (work in progress)
@@ -24,4 +25,7 @@ Other possible exercises:
 * modelling some subset of the commutative algebra hierarchy?
 * type-safe (dependent) protocol descriptions
 * modelling optics
+* implementing an effect system
+* regexp parser
+* mixfix parser (into mutually recursive AST-s)
 * ...

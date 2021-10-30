@@ -51,7 +51,7 @@ record Sig where
 -- the functor associated to a signature
 public export
 SigF : Sig -> (Type -> Type)
-SigF sig = \t => (j : Fin sig.size ** ConF (index j sig.cons) t)
+SigF sig t = (j : Fin sig.size ** ConF (index j sig.cons) t)
 
 -- an F-algebra with the F defined by the given signature
 public export
@@ -76,7 +76,6 @@ initialAlgebra = Wrap
 data PosP : (constraint : Type -> Type) -> Pos -> Type where
   RecP :                               PosP constraint  Rec
   EmbP : (a : Type) -> constraint a -> PosP constraint (Emb a)
-  -- FunP : {p : Pos} -> (a : Type) -> ((b : Type) -> constraint (a -> b)) -> PosP constraint (Fun a p)
 
 -- a proof that the types appearing in a constructor satisfy some constraint
 data ConP : (constraint : Type -> Type) -> (con : Con) -> Type where

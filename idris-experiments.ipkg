@@ -24,6 +24,7 @@ modules
   , SQL.Sig
   , SQL.Expr
   , SQL.Query
+  , Data.RAL
   , Lib.Parsec
   , Lib.Misc
 

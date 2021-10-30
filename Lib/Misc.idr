@@ -30,6 +30,7 @@ sortOn f = sortBy (\x,y => compare (f x) (f y))
 
 --------------------------------------------------------------------------------
 -- Fin
+
 public export
 enumerateFin : (n : Nat) -> List (Fin n)
 enumerateFin Z     = Nil
@@ -97,6 +98,7 @@ mkOrd eq cmp = MkOrd @{mkEq eq} cmp lt gt le ge max min where
 --------------------------------------------------------------------------------
 -- Show
 
+public export
 theShow : (a : Type) -> Show a => Show a
 theShow _ @{show} = show
 
@@ -111,6 +113,13 @@ mkShow f = MkShow (f Open) f
 public export
 mapM : Traversable t => Applicative f => (a -> f b) -> t a -> f (t b)
 mapM = traverse
+
+export
+replicateM : Applicative m => {0 a : Type} -> (n : Nat) -> m a -> m (Vect n a)
+replicateM cnt0 f = loop cnt0 where
+  loop : (n : Nat) -> m (Vect n a)
+  loop Z     = pure Nil
+  loop (S m) = (::) <$> f <*> loop m
 
 --------------------------------------------------------------------------------
 -- dependent vectors
