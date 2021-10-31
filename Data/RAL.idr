@@ -9,6 +9,7 @@ import Data.Fin
 import Data.Bits
 
 %hide Prelude.toList
+%hide Prelude.Types.elem
 
 --------------------------------------------------------------------------------
 
@@ -68,8 +69,30 @@ treeToList (Leaf x)       = x :: Nil
 treeToList (Cherry x y z) = x :: y :: z :: Nil
 treeToList (Node x s t)   = x :: treeToList s ++ treeToList t
 
+treeFoldL : (acc -> elem -> acc) -> acc -> Tree n elem -> acc
+treeFoldL f = go where
+  go : forall n. acc -> Tree n elem -> acc 
+  go acc tree = case tree of
+    Leaf   x     => f acc x
+    Cherry x y z => f  (f  (f acc x) y) z
+    Node   x s t => go (go (f acc x) s) t
+
+treeFoldR : (elem -> acc -> acc) -> acc -> Tree n elem -> acc
+treeFoldR f acc0 tree0 = go tree0 acc0 where
+  go : forall n. Tree n elem -> acc -> acc 
+  go tree acc = case tree of
+    Leaf   x     => f x acc
+    Cherry x y z => f x (f  y (f  z acc))
+    Node   x s t => f x (go s (go t acc))
+
 -- ex : Tree 2 Int
 -- ex = Node 101 (Cherry 102 103 104) (Cherry 105 106 107)
+
+implementation Foldable (Tree n) where
+  null   = \_ => False
+  foldl  = treeFoldL
+  foldr  = treeFoldR
+  toList = treeToList
 
 --------------------------------------------------------------------------------
 
@@ -107,6 +130,24 @@ fromSeq1 {n} seq1 = case seq1 of
   Nil1         => Empty
   Skip1 k t ts => Start1 (k+n) t ts
 
+toList1 : Seq1 n a -> List a
+toList1 Nil1             = Nil
+toList1 (Skip1 _ t rest) = treeToList t ++ toList1 rest
+
+foldl1 : (a -> e -> a) -> a -> Seq1 n e -> a
+foldl1 f = go where
+  go : forall n. a -> Seq1 n e -> a
+  go acc seq1 = case seq1 of
+    Nil1         => acc
+    Skip1 _ t ts => go (treeFoldL f acc t) ts
+
+foldr1 : (e -> a -> a) -> a -> Seq1 n e -> a
+foldr1 f = go where
+  go : forall n. a -> Seq1 n e -> a
+  go acc seq1 = case seq1 of
+    Nil1         => acc
+    Skip1 _ t ts => treeFoldR f (go acc ts) t
+
 --------------------------------------------------------------------------------
 
 ||| Proof that a sequence is not empty
@@ -138,9 +179,9 @@ length seq = case seq of
 
 ||| whether the sequence in empty, O(1)
 export
-null : Seq a -> Bool
-null Empty = True
-null _     = False
+isEmpty : Seq a -> Bool
+isEmpty Empty = True
+isEmpty _     = False
 
 --------------------------------------------------------------------------------
 
@@ -241,20 +282,39 @@ export
 fromList : List a -> Seq a
 fromList = foldr cons Empty
 
-toList1 : Seq1 n a -> List a
-toList1 Nil1             = Nil
-toList1 (Skip1 _ t rest) = treeToList t ++ toList1 rest
-
 ||| conversion to list, O(n)
 export
-toList : Seq a -> List a
-toList Empty = Nil
-toList (Start1 _ t     rest) = treeToList t                   ++ toList1 rest 
-toList (Start2 _ t1 t2 rest) = treeToList t1 ++ treeToList t2 ++ toList1 rest 
+seqToList : Seq a -> List a
+seqToList Empty = Nil
+seqToList (Start1 _ t     rest) = treeToList t                   ++ toList1 rest 
+seqToList (Start2 _ t1 t2 rest) = treeToList t1 ++ treeToList t2 ++ toList1 rest 
+
+--------------------------------------------------------------------------------
+
+export
+seqFoldL : (acc -> elem -> acc) -> acc -> Seq elem -> acc
+seqFoldL f x0 seq = case seq of
+  Empty                 => x0
+  (Start1 _ t     rest) => foldl1 f (treeFoldL f x0 t) rest
+  (Start2 _ t1 t2 rest) => foldl1 f (treeFoldL f (treeFoldL f x0 t1) t2) rest
+
+export
+seqFoldR : (elem -> acc -> acc) -> acc -> Seq elem -> acc
+seqFoldR f x0 seq = case seq of
+  Empty                 => x0
+  (Start1 _ t     rest) => treeFoldR f (foldr1 f x0 rest) t
+  (Start2 _ t1 t2 rest) => treeFoldR f (treeFoldR f (foldr1 f x0 rest) t2) t1
 
 export
 implementation Show a => Show (Seq a) where
-  show seq = "fromList " ++ show (toList seq)
+  show seq = "fromList " ++ show (seqToList seq)
+
+export
+implementation Foldable Seq where
+  foldl  = seqFoldL
+  foldr  = seqFoldR
+  null   = delay . isEmpty
+  toList = seqToList
 
 --------------------------------------------------------------------------------
 
