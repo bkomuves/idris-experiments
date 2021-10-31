@@ -116,6 +116,7 @@ data NonEmpty : Seq a -> Type where
   NonEmpty2 : NonEmpty (Start2 n t1 t2 seq)
 
 ||| constructs such a proof, O(1)
+export
 isNonEmpty : (seq : Seq a) -> Maybe (NonEmpty seq)
 isNonEmpty Empty            = Nothing
 isNonEmpty (Start1 _ _ _)   = Just NonEmpty1
@@ -136,6 +137,7 @@ length seq = case seq of
   Start2 n _ _ rest => 2 * treeSize n + length1 rest
 
 ||| whether the sequence in empty, O(1)
+export
 null : Seq a -> Bool
 null Empty = True
 null _     = False
@@ -230,6 +232,7 @@ tail seq = case unCons seq of { Just (_,t) => t ; Nothing => fatal "tail: imposs
 --------------------------------------------------------------------------------
 
 ||| the empty sequence
+export
 empty : Seq a
 empty = Empty
 
@@ -249,30 +252,36 @@ toList Empty = Nil
 toList (Start1 _ t     rest) = treeToList t                   ++ toList1 rest 
 toList (Start2 _ t1 t2 rest) = treeToList t1 ++ treeToList t2 ++ toList1 rest 
 
+export
 implementation Show a => Show (Seq a) where
   show seq = "fromList " ++ show (toList seq)
 
 --------------------------------------------------------------------------------
 
 ||| singleton sequence
+export
 singleton : a -> Seq a
 singleton x = Start1 0 (Leaf x) Nil1
 
 ||| two-element sequence
+export
 pair : a -> a -> Seq a
 pair x y = Start2 0 (Leaf x) (Leaf y) Nil1
 
 ||| three-element sequence
+export
 triple : a -> a -> a -> Seq a
 triple x y z = Start1 1 (Cherry x y z) Nil1
 
 ||| four-element sequence
+export
 quad : a -> a -> a -> a -> Seq a
 quad x y z w = Start1 0 (Leaf x) (Skip1 0 (Cherry y z w) Nil1)
 
 --------------------------------------------------------------------------------
 
 ||| look up an element at the given index, O(log(i))
+export
 lookup : Nat -> Seq a -> Maybe a
 lookup i Empty             = Nothing
 lookup i (Start1 n t seq1) = 
@@ -288,6 +297,7 @@ lookup i (Start2 n t1 t2 seq1) =
                    else lookup1 (subtract j m) seq1
 
 ||| look up an element at the given index, O(log(i))
+export
 unsafeIndex : Seq a -> Nat -> a
 unsafeIndex seq i = case lookup i seq of
   Just y  => y
@@ -307,6 +317,7 @@ dropNaive (S k) seq = case unCons seq of
 mutual
 
   ||| drops the first k elements of a sequence, O(log(k))
+  export
   drop : Nat -> Seq a -> Seq a
   drop Z  seq                  = seq
   drop d  Empty                = Empty  
